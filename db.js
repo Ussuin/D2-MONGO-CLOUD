@@ -1,14 +1,22 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
+
+let isConnected;
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("mongoDB connect succesfully");
-    } catch (error){
-        console.error("mongoDB connection failed", error.message);
-        process.exit(1);
-    }
+  if (isConnected) {
+    return;
+  }
+
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    isConnected = conn.connections[0].readyState;
+    console.log("MongoDB conectado en Vercel");
+  } catch (error) {
+    console.error("Error al conectar MongoDB:", error.message);
+  }
 };
 
 module.exports = connectDB;
